@@ -28,4 +28,17 @@ public class Author {
     
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Book> books = new ArrayList<>();
+    
+    // Manual setters if Lombok fails
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+    
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
+    }
 }

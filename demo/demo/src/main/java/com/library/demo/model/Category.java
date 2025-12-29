@@ -14,24 +14,30 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Category {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idC;
-
+    
     @Column(nullable = false)
     private String categoryName;
-
-    // Self-referencing relationship (parent category)
+    
     @ManyToOne
     @JoinColumn(name = "parent_category_id")
     private Category parentCategory;
-
-    // Subcategories
+    
     @OneToMany(mappedBy = "parentCategory")
     private List<Category> subCategories = new ArrayList<>();
-
-    // Books in this category
+    
     @OneToMany(mappedBy = "category")
     private List<Book> books = new ArrayList<>();
+    
+    // Manual setters if Lombok fails
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+    
+    public void setParentCategory(Category parentCategory) {
+        this.parentCategory = parentCategory;
+    }
 }
