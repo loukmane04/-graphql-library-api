@@ -2,6 +2,7 @@ package com.library.demo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -10,23 +11,23 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity//allows you to configure various aspects of web security for the application
+@EnableWebSecurity
+@EnableMethodSecurity  // Enable @PreAuthorize on methods
 public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .httpBasic(basic -> basic.realmName("GraphQL API"))  // Enable HTTP Basic Authentication
+            .httpBasic(basic -> basic.realmName("GraphQL API"))
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/graphql").hasRole("ADMIN")  // Secure GraphQL endpoint for admin only
-                .requestMatchers("/h2-console/**").permitAll()  // Allow H2 console access (optional)
-                .anyRequest().authenticated()  // Require authentication for all other requests
+                .requestMatchers("/graphql", "/graphiql", "/h2-console/**").permitAll()  // Allow GraphQL access
+                .anyRequest().authenticated()
             )
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/graphql", "/h2-console/**")  // Disable CSRF for GraphQL and H2
+                .ignoringRequestMatchers("/graphql", "/graphiql", "/h2-console/**")
             )
             .headers(headers -> headers
-                .frameOptions(frame -> frame.sameOrigin())  // Allow H2 console frames
+                .frameOptions(frame -> frame.sameOrigin())
             );
         
         return http.build();
@@ -36,22 +37,9 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
         manager.createUser(User.withUsername("admin")
-            .password("{noop}password")  // Using {noop} for no password encoding (development only)
+            .password("{noop}password")  // {noop} means no password encoding
             .roles("ADMIN")
             .build());
         return manager;
     }
 }
-
-/*Explanation:
- Security Setup:
- - Basic authentication is used with the realm name "GraphQL API".
- - The /graphql endpoint is protected and only accessible by users with the "ADMIN" role.
- - The /h2-console/** endpoint (used for H2 database console) is accessible to everyone.
- - CSRF protection is disabled for the /graphql and /h2-console/** endpoints.
-
- User Management:
- - An in-memory user manager is used with a single hardcoded user (admin) having the role "ADMIN".
- - The password for the "admin" user is set to "password" (without encoding) for development purposes.
- - This setup is meant for testing and development; for production, password encoding and a persistent user store are recommended.
-*/

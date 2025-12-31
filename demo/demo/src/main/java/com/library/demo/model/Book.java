@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "books")
@@ -27,13 +28,48 @@ public class Book {
     
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
+    @JsonIgnoreProperties("books")
     private Category category;
     
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
+    @JsonIgnoreProperties("books")
     private Author author;
     
-    // Manual setters if Lombok fails
+    // Getters
+    public Long getIdBook() {
+        return idBook;
+    }
+    
+    public String getTitle() {
+        return title;
+    }
+    
+    public Integer getPublicationYear() {
+        return publicationYear;
+    }
+    
+    public String getLanguage() {
+        return language;
+    }
+    
+    public Integer getNbPages() {
+        return nbPages;
+    }
+    
+    public Category getCategory() {
+        return category;
+    }
+    
+    public Author getAuthor() {
+        return author;
+    }
+    
+    // Setters
+    public void setIdBook(Long idBook) {
+        this.idBook = idBook;
+    }
+    
     public void setTitle(String title) {
         this.title = title;
     }

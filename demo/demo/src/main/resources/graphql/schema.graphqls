@@ -1,0 +1,122 @@
+# ============================================
+# SCALAR TYPES
+# ============================================
+
+scalar Long
+
+# ============================================
+# ENTITY TYPES
+# ============================================
+
+type Book {
+    idBook: ID!
+    title: String!
+    publicationYear: Int!
+    language: String!
+    nbPages: Int!
+    category: Category!
+    author: Author!
+}
+
+type Author {
+    idA: ID!
+    name: String!
+    age: Int!
+    nationality: String!
+    books: [Book!]!
+}
+
+type Category {
+    idC: ID!
+    categoryName: String!
+    parentCategory: Category
+    subCategories: [Category!]!
+    books: [Book!]!
+}
+
+# ============================================
+# PAGINATION & SEARCH TYPES
+# ============================================
+
+type BookPage {
+    content: [Book!]!
+    totalElements: Int!
+    totalPages: Int!
+    currentPage: Int!
+    pageSize: Int!
+    hasNext: Boolean!
+    hasPrevious: Boolean!
+}
+
+type SearchResult {
+    books: [Book!]!
+    authors: [Author!]!
+    categories: [Category!]!
+    totalResults: Int!
+}
+
+# ============================================
+# INPUT TYPES
+# ============================================
+
+input BookInput {
+    title: String!
+    publicationYear: Int!
+    language: String!
+    nbPages: Int!
+    categoryId: ID!
+    authorId: ID!
+}
+
+# ============================================
+# QUERY TYPE
+# ============================================
+
+type Query {
+
+    books(
+        page: Int = 0
+        size: Int = 10
+        publicationYear: Int
+        language: String
+        categoryId: ID
+        recursive: Boolean = false
+    ): BookPage!
+
+    book(id: ID!): Book
+
+    booksByAuthor(
+        authorId: ID!
+        page: Int = 0
+        size: Int = 10
+    ): BookPage!
+
+    search(
+        keyword: String!
+        page: Int = 0
+        size: Int = 10
+    ): SearchResult!
+
+    author(id: ID!): Author
+    authors: [Author!]!
+    category(id: ID!): Category
+    categories: [Category!]!
+}
+
+# ============================================
+# MUTATION TYPE
+# ============================================
+
+type Mutation {
+    addBook(input: BookInput!): Book!
+    deleteAuthor(id: ID!): Boolean!
+}
+
+# ============================================
+# SCHEMA DEFINITION
+# ============================================
+
+schema {
+    query: Query
+    mutation: Mutation
+}
