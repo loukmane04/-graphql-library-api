@@ -2,13 +2,8 @@ FROM eclipse-temurin:21-jdk AS build
 
 WORKDIR /workspace/app
 
-# Copy Maven wrapper and pom.xml
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-
-# Copy source code
-COPY src src
+# Copy the entire demo directory
+COPY demo/demo/ .
 
 # Build the application
 RUN ./mvnw clean package -DskipTests
