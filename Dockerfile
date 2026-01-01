@@ -1,9 +1,26 @@
+FROM eclipse-temurin:21-jdk AS build
+
+WORKDIR /workspace/app
+
+# Copy Maven wrapper and pom.xml
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+
+# Copy source code
+COPY src src
+
+# Build the application
+RUN ./mvnw clean package -DskipTests
+
+# Runtime stage
 FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 
-COPY demo/demo/target/demo-0.0.1-SNAPSHOT.jar app.jar
+# Copy the built JAR from the build stage
+COPY --from=build /workspace/app/target/*.jar app.jar
 
 EXPOSE 8080
 
-CMD ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
