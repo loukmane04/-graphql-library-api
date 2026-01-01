@@ -1,20 +1,21 @@
-FROM eclipse-temurin:21-jdk AS build
+# Build stage
+FROM maven:3.9-eclipse-temurin-21 AS builder
 
-WORKDIR /workspace/app
+WORKDIR /build
 
-# Copy the entire demo directory
-COPY demo/demo/ .
+# Copy the entire demo/demo directory
+COPY demo/demo .
 
 # Build the application
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
-# Runtime stage
-FROM eclipse-temurin:21-jdk
+# Runtime stage - using JRE for smaller image
+FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
 # Copy the built JAR from the build stage
-COPY --from=build /workspace/app/target/*.jar app.jar
+COPY --from=builder /build/target/*.jar app.jar
 
 EXPOSE 8080
 
