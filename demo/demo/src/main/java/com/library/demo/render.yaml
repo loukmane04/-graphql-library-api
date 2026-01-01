@@ -1,9 +1,7 @@
 services:
   - type: web
     name: graphql-library-api
-    runtime: java
-    buildCommand: mvn clean package -DskipTests
-    startCommand: java -jar target/*.jar
-    envVars:
-      - key: JAVA_VERSION
-        value: 21
+    env: docker
+    plan: free
+    buildCommand: ""
+    startCommand: ""
